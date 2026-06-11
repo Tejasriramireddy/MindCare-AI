@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mental Health Chatbot</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #0b0f19;
+      color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      padding: 15px;
+      background: #111827;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    /* CHAT AREA FULL SCREEN */
+    #chatbox {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* MESSAGES */
+    .msg {
+      padding: 12px 15px;
+      border-radius: 12px;
+      max-width: 60%;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #2563eb;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: #1f2937;
+    }
+
+    /* INPUT AREA FIXED BOTTOM */
+    .input-area {
+      display: flex;
+      padding: 15px;
+      background: #111827;
+      border-top: 1px solid #1f2937;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: #0b0f19;
+      color: white;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="header">💙 Mental Health Chatbot</div>
+
+<div id="chatbox"></div>
+
+<div class="input-area">
+  <input id="msg" placeholder="Type your message..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+async function sendMessage() {
+  let input = document.getElementById("msg");
+  let message = input.value;
+
+  if (!message) return;
+
+  addMessage("user", message);
+  input.value = "";
+
+  const res = await fetch("http://127.0.0.1:5000/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+
+  addMessage("bot", data.reply);
+}
+
+function addMessage(type, text) {
+  let div = document.createElement("div");
+  div.classList.add("msg", type);
+  div.innerText = text;
+
+  document.getElementById("chatbox").appendChild(div);
+
+  // auto scroll
+  document.getElementById("chatbox").scrollTop =
+    document.getElementById("chatbox").scrollHeight;
+}
+</script>
+
+</body>
+</html>
